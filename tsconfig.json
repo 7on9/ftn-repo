@@ -10,6 +10,20 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "~ftn/*": [
+        "./apps/ftn/src/*"
+      ],
+      "~ftn-worker/*": [
+        "./apps/ftn-worker/src/*"
+      ],
+      "@libs/*": [
+        "./libs/*"
+      ],
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -17,6 +31,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
-  }
+  },
+  "include": [
+    "."
+  ],
 }
