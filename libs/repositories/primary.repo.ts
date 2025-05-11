@@ -1,9 +1,9 @@
-import { BaseRepoPostgreSql } from './base.repo';
 import { ObjectLiteral } from 'typeorm';
+import { BaseRepoPostgreSql, BaseRepository } from './base.repo';
 
 export class PrimaryRepo<Entity extends ObjectLiteral> extends BaseRepoPostgreSql<Entity> {
-  constructor(target: any, manager: any, queryRunner?: any) {
-    super(target, manager, queryRunner);
+  constructor() {
+    super();
   }
   static getConnectionName() {
     return 'default';
