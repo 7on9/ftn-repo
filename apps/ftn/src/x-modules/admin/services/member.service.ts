@@ -3,7 +3,7 @@ import { BindRepo, DefTransaction } from '@libs/@core/decorator';
 import { BusinessException } from '@libs/@systems/exceptions';
 import { UpdatePassword } from '~ftn/dto/member.dto';
 import securityHelper from '@libs/@core/helpers/security.helper';
-import { MemberRepo } from '@/repositories/primary';
+import { MemberRepo } from '~/libs/repositories/primary';
 
 @Injectable()
 export class MemberService {

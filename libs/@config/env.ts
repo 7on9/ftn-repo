@@ -1,12 +1,12 @@
 import { join } from 'path';
-import { DataSourceOptions } from 'typeorm';
+import { ConnectionOptions } from 'typeorm';
 
 const stringToBoolean = (value: string | boolean) => {
   return Boolean(JSON.parse(`${value}`));
 };
 
 export type IEnvConfig = {
-  DBS: Array<DataSourceOptions>;
+  DBS: Array<ConnectionOptions>;
   CONNECTORS?: {
     SSO: {
       baseUrl: string;
@@ -16,7 +16,7 @@ export type IEnvConfig = {
 
 export function configEnv(): IEnvConfig {
   const {
-    PORT,
+    PORT = 3000,
     TZ,
     REQUEST_TIMEOUT = 3 * 60 * 1000,
     DB_PRIMARY_HOST,
@@ -39,9 +39,9 @@ export function configEnv(): IEnvConfig {
     DISPLAY_TIMEZONE,
   } = process.env;
   return {
-    PORT: Number(PORT) || 3000,
+    PORT: Number(PORT!) ?? 3000,
     TZ,
-    REQUEST_TIMEOUT: Number(REQUEST_TIMEOUT),
+    REQUEST_TIMEOUT: Number(REQUEST_TIMEOUT) ?? 3 * 60 * 1000,
     SWAGGER_TITLE,
     SWAGGER_DESCRIPTION,
     SWAGGER_VERSION,
@@ -72,5 +72,5 @@ export function configEnv(): IEnvConfig {
         ],
       },
     ],
-  } as IEnvConfig;
+  } as unknown as IEnvConfig;
 }

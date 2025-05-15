@@ -32,7 +32,7 @@ export interface IRequestConfig<TDataRequest = any> extends IRequestConfigBase<T
   params?: TDataRequest;
 }
 
-const HttpClient = (baseConfig?: IHttpClientConfig) => {
+const HttpClient = (baseConfig: IHttpClientConfig) => {
   const { beforeRequest, handleError, handleResponse, ...configInit } = baseConfig;
   const initApi = () => {
     const api = axios.create(configInit);
@@ -158,4 +158,4 @@ const HttpClient = (baseConfig?: IHttpClientConfig) => {
   };
 };
 
-export const createHttpClient = (baseConfig?: IHttpClientConfig) => HttpClient(baseConfig);
+export const createHttpClient = (baseConfig: IHttpClientConfig) => HttpClient(baseConfig);

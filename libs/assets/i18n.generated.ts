@@ -45,7 +45,7 @@ export type I18nTranslations = {
                 "member_existed": string;
                 "member_not_existed": string;
                 "referral_code_invalid": string;
-                "referral_code_bala_not_found": string;
+                "token_expired": string;
             };
         };
         "order": {

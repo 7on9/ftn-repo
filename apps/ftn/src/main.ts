@@ -4,11 +4,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { FtnModule } from './ftn.module';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-import dayjs from 'dayjs';
-import weekday from 'dayjs/plugin/weekday';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import * as timezone from 'dayjs/plugin/timezone';
+import * as utc from 'dayjs/plugin/utc';
+import * as dayjs from 'dayjs';
+import * as weekday from 'dayjs/plugin/weekday';
+import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { setupTransactionContext } from '~/libs/@core/decorator';
 import { GlobalPrefix } from '~/libs/common/constants';
@@ -32,9 +32,9 @@ dayjs.extend(isSameOrAfter);
 const configSwagger = (app: INestApplication) => {
   const { SWAGGER_TITLE, SWAGGER_DESCRIPTION, SWAGGER_VERSION } = configEnv();
   const options = new DocumentBuilder()
-    .setTitle(SWAGGER_TITLE)
-    .setDescription(SWAGGER_DESCRIPTION)
-    .setVersion(SWAGGER_VERSION)
+    .setTitle(SWAGGER_TITLE!)
+    .setDescription(SWAGGER_DESCRIPTION!)
+    .setVersion(SWAGGER_VERSION!)
     .addSecurity('bearer', {
       type: 'http',
       scheme: 'bearer',
@@ -102,7 +102,7 @@ async function bootstrap() {
       next: express.NextFunction,
     ) => {
       const { REQUEST_TIMEOUT = 30 * 60 * 1000 } = configEnv();
-      res.setTimeout(REQUEST_TIMEOUT, () => {
+      res.setTimeout(REQUEST_TIMEOUT as number, () => {
         next(new ApiException('REQUEST TIMEOUT'));
       });
       next();

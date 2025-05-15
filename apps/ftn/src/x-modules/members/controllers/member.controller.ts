@@ -4,7 +4,6 @@ import { MemberService } from '../services';
 import {
   ListMemberReq,
   UpdateMemberProfileReq,
-  UpdateAvatarReq,
 } from '~ftn/dto/member.dto';
 
 @DefController()
@@ -23,12 +22,5 @@ export class MemberController {
   })
   updateProfile(@Body() body: UpdateMemberProfileReq) {
     return this.memberService.updateProfile(body);
-  }
-
-  @DefPost('update-avatar', {
-    summary: 'Update member avatar',
-  })
-  updateAvatar(@Body() body: UpdateAvatarReq) {
-    return this.memberService.updateAvatar(body);
   }
 }

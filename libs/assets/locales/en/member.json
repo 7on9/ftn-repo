@@ -3,7 +3,8 @@
         "error": {
             "member_existed": "Member {username} existed",
             "member_not_existed": "Member not existed",
-            "referral_code_invalid": "Referral code not existed"
+            "referral_code_invalid": "Referral code not existed",
+            "token_expired": "Token expired"
         }
     }
 }

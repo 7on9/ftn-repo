@@ -9,9 +9,7 @@ import {
   RegisterMemberReq,
   VerifyRegisterMemberReq,
 } from '~ftn/dto/auth.dto';
-import {
-  MemberRepo,
-} from '~/repositories/primary';
+import { MemberRepo } from '@libs/repositories/primary';
 import { memberSessionContext } from '../member-session.context';
 import { NSMember } from '@libs/common/enums';
 import { SuccessResponse } from '@libs/@systems/utils';
@@ -21,7 +19,11 @@ import { configEnv } from '@libs/@config/env';
 import { MemberRefreshTokenService } from './member-refresh-token.service';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '@libs/assets/i18n.generated';
-import { ChangePasswordReq, ResetPasswordReq, UpdatePassword } from '~ftn/dto/member.dto';
+import {
+  ChangePasswordReq,
+  ResetPasswordReq,
+  UpdatePassword,
+} from '~ftn/dto/member.dto';
 import { MemberEntity } from '@libs/entities/primary';
 import { IsNull, Not } from 'typeorm';
 
@@ -63,31 +65,27 @@ export class AuthMemberService {
       );
     }
 
-    let referrerId = null;
-
-    if (body?.referralCode) {
-      const ref = await this.memberRepo.findOne({
-        where: {
-          referralCode: body.referralCode,
-        },
-      });
-      if (ref) {
-        referrerId = ref.id;
-      } else {
-        throw new BusinessException(
-          this.i18n.t('member.AuthMemberService.error.referral_code_invalid'),
-        );
-      }
-    }
+    let referrerId = undefined;
 
     const password = await securityHelper.hash(body.password);
-    const { password: hashPassword, ...newMember } = await this.memberRepo.save({
-      ...body,
-      password,
-      addressType: NSMember.EAddressType.Company,
-      referralCode: body?.username, //generateCodeHelper.generateMemberReferralCode(),
-      referrerId,
-    });
+    const newMember = await this.memberRepo.save(
+      {
+        ...body,
+        password,
+        addressType: NSMember.EAddressType.Company,
+        referralCode: body?.username, //generateCodeHelper.generateMemberReferralCode(),
+        referrerId,
+      },
+    );
+    if (!newMember?.id) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_existed', {
+          args: {
+            username: body?.username,
+          },
+        }),
+      );
+    }
 
     const payload = {
       sub: newMember.id,
@@ -95,7 +93,9 @@ export class AuthMemberService {
     };
     return {
       accessToken: await this.jwtService.signAsync(payload),
-      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(newMember.id),
+      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(
+        newMember.id,
+      ),
       tokenType: 'Bearer',
       ...newMember,
     };
@@ -122,31 +122,14 @@ export class AuthMemberService {
       return member;
     }
 
-    let referrerId = null;
-
-    if (body?.referralCode) {
-      const ref = await this.memberRepo.findOne({
-        where: {
-          referralCode: body.referralCode,
-        },
-      });
-      if (ref) {
-        referrerId = ref.id;
-      } else {
-        throw new BusinessException(
-          this.i18n.t('member.AuthMemberService.error.referral_code_invalid'),
-        );
-      }
-    }
-
     const password = await securityHelper.hash(body.password);
-    const { password: hashPassword, ...newMember } = await this.memberRepo.save({
-      ...body,
-      password,
-      addressType: NSMember.EAddressType.Company,
-      referralCode: body?.username, //generateCodeHelper.generateMemberReferralCode(),
-      referrerId,
-    });
+    const { password: hashPassword, ...newMember } = await this.memberRepo.save(
+      {
+        ...body,
+        password,
+        addressType: NSMember.EAddressType.Company,
+      },
+    );
 
     return newMember;
   }
@@ -158,25 +141,36 @@ export class AuthMemberService {
       },
     });
     if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
     if (member.status === NSMember.EStatus.Deleted) {
       throw new BusinessException('Member deleted');
     }
-    const checkPass = await securityHelper.compare(body?.password, member.password);
+    const checkPass = await securityHelper.compare(
+      body?.password,
+      member.password,
+    );
     if (!checkPass) {
       throw new BusinessException('Mật khẩu không hợp lệ');
     }
-    delete member.password;
-
     const payload = {
       sub: member.id,
       ...member,
     };
 
+    if (!member?.id) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
+    }
+
     return {
       accessToken: await this.jwtService.signAsync(payload),
-      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(member.id),
+      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(
+        member.id,
+      ),
       tokenType: 'Bearer',
       ...member,
     };
@@ -186,14 +180,18 @@ export class AuthMemberService {
     let isShowCode = true;
     const { memberId, sessionData } = memberSessionContext;
     const member = await this.memberRepo.findOne(memberId);
-    if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+    if (!member?.id) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
     let businessTypes = [];
-        return {
+    return {
       ...sessionData,
       ...member,
-      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(member.id),
+      refreshToken: await this.memberRefreshTokenService.generateRefreshToken(
+        member.id,
+      ),
       businessTypes,
       // referralCode,
       isShowCode,
@@ -204,7 +202,9 @@ export class AuthMemberService {
     let isShowCode = true;
     const member = await this.memberRepo.findOne(memberId);
     if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
     let businessTypes = [];
     return {
@@ -217,8 +217,10 @@ export class AuthMemberService {
   async delete() {
     const { memberId } = memberSessionContext;
     const member = await this.memberRepo.findOne(memberId);
-    if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+    if (!memberId || !member) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
     if (member.status === NSMember.EStatus.Deleted) {
       throw new BusinessException('Member already deleted');
@@ -231,39 +233,12 @@ export class AuthMemberService {
 
   async forgotPassword({ username }) {
     try {
-      const { SMS_EXPIRY_TIME_OTP } = configEnv();
-      const user = await this.memberRepo.findOne({ username });
-      if (user) {
-        const otp = customAlphabet('0123456789', 6)();
-        const expiryDate = new Date();
-        expiryDate.setMinutes(expiryDate.getMinutes() + SMS_EXPIRY_TIME_OTP);
-        console.log('expiryDate', expiryDate);
-
-        await this.otpCodeRepo.save({
-          code: otp,
-          userId: user.id,
-          expiryDate,
-          task: NSOtp.ETask.ResetPassword,
-        });
-
-        this.notificationService.pushSingleNotification({
-          type: NSNotification.Type.Zalo,
-          templateCode: NSNotification.TemplateCode.ZaloOtp,
-          data: {
-            phoneNumber: user.phone,
-            otp,
-          },
-        });
-
-        return {
-          userId: user.id,
-          message: 'The user exists.',
-        };
-      } else {
-        return {
-          message: 'The user does not exist.',
-        };
-      }
+      return await this.memberRepo.update(
+        { username },
+        {
+          password: SystemValue.DEFAULT_PASSWORD_MEMBER,
+        },
+      );
     } catch (error) {
       throw new Error(error);
     }
@@ -272,29 +247,12 @@ export class AuthMemberService {
   @DefTransaction()
   async resetPassword(req: ResetPasswordReq) {
     const { userId, otpCode, newPassword } = req;
-    const { SMS_EXPIRY_TIME_OTP } = configEnv();
-
-    const otpCodeEntity = await this.otpCodeRepo.findOne({
-      where: {
-        code: otpCode,
-        userId,
-        task: NSOtp.ETask.ResetPassword,
-        expiryDate: Not(IsNull()),
-      },
-    });
-
-    if (!otpCodeEntity) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.otp_code_invalid'));
-    }
-
-    const now = new Date();
-    if (now > otpCodeEntity.expiryDate) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.otp_code_expired'));
-    }
 
     const member = await this.memberRepo.findOne(userId);
     if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
 
     member.password = await securityHelper.hash(newPassword);
@@ -306,15 +264,30 @@ export class AuthMemberService {
   async refreshToken(refreshToken: string) {
     const { JWT_REFRESH_TOKEN_SECRET } = configEnv();
 
-    const refreshTokenPayload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
-      secret: JWT_REFRESH_TOKEN_SECRET,
-    });
+    const refreshTokenPayload = await this.jwtService.verifyAsync<JwtPayload>(
+      refreshToken,
+      {
+        secret: JWT_REFRESH_TOKEN_SECRET,
+      },
+    );
     const { sub: memberId, exp: expiryDate } = refreshTokenPayload;
+    if (!memberId) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
+    }
+    if (!expiryDate) {
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.token_expired'),
+      );
+    }
 
     const member = await this.memberRepo.findOne(memberId);
 
     if (!member) {
-      throw new BusinessException(this.i18n.t('member.AuthMemberService.error.member_not_existed'));
+      throw new BusinessException(
+        this.i18n.t('member.AuthMemberService.error.member_not_existed'),
+      );
     }
 
     const accessTokenPayload = {
@@ -352,7 +325,10 @@ export class AuthMemberService {
       if (!oldPassword) {
         throw new BusinessException('Vui lòng nhập mật khẩu cũ');
       }
-      const checkOldPass = await securityHelper.compare(oldPassword, member.password);
+      const checkOldPass = await securityHelper.compare(
+        oldPassword,
+        member.password,
+      );
       if (!checkOldPass) {
         throw new BusinessException('Mật khẩu không hợp lệ');
       }
@@ -385,12 +361,16 @@ export class AuthMemberService {
 
     // Validate at least one special character from the allowed list
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) {
-      throw new BusinessException('Mật khẩu phải chứa ít nhất một ký tự đặc biệt');
+      throw new BusinessException(
+        'Mật khẩu phải chứa ít nhất một ký tự đặc biệt',
+      );
     }
 
     // Ensure no spaces in the password
     if (/\s/.test(newPassword)) {
-      throw new BusinessException('Mật khẩu không được chứa bất kỳ khoảng trắng nào.');
+      throw new BusinessException(
+        'Mật khẩu không được chứa bất kỳ khoảng trắng nào.',
+      );
     }
 
     return this.memberRepo.update(
