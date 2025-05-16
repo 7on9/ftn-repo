@@ -1,8 +1,6 @@
 import { MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ChildModule } from '@libs/@core/decorator';
 import { RefixModule } from '../config-module';
-import {
-} from '../integration/services';
 import { GeoService } from '../publics/services';
 import * as allController from './controllers';
 import { MemberMiddleware } from './member.middleware';
@@ -38,7 +36,7 @@ export class MemberModule implements NestModule {
         },
       )
       .forRoutes({
-        path: `${RefixModule.members}*`,
+        path: `${RefixModule.members}{/*path}`,
         method: RequestMethod.ALL,
       });
   }

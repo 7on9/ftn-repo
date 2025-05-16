@@ -18,7 +18,7 @@ export class IntegrationModule implements NestModule {
       .apply(IntegrationMiddleware)
       .exclude()
       .forRoutes({
-        path: `${RefixModule.integration}*`,
+        path: `${RefixModule.integration}{/*path}`,
         method: RequestMethod.ALL,
       });
   }

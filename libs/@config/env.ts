@@ -52,7 +52,7 @@ export function configEnv(): IEnvConfig {
     DBS: [
       {
         name: 'default',
-        type: 'postgres',
+        type: 'mysql',
         host: DB_PRIMARY_HOST,
         port: Number(DB_PRIMARY_PORT),
         username: DB_PRIMARY_USERNAME,
@@ -60,7 +60,11 @@ export function configEnv(): IEnvConfig {
         database: DB_PRIMARY_DATABASE,
         synchronize: stringToBoolean(DB_PRIMARY_SYNCHRONIZE),
         ssl: stringToBoolean(DB_PRIMARY_SSL)
-          ? { rejectUnauthorized: stringToBoolean(DB_PRIMARY_SSL_REJECT_UNAUTHORIZED) }
+          ? {
+              rejectUnauthorized: stringToBoolean(
+                DB_PRIMARY_SSL_REJECT_UNAUTHORIZED,
+              ),
+            }
           : undefined,
         entities: [join(__dirname, '../entities/primary/**/**{.ts,.js}')],
         // subscribers: [join(__dirname, '../@subscribers/primary/**/**{.ts,.js}')],
