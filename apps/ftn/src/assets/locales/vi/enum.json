@@ -1,0 +1,34 @@
+{
+  "NSMember": {
+    "EAddressType": {
+      "HOME": "Nhà riêng",
+      "COMPANY": "Công ty"
+    },
+    "EMembershipType": {
+      "PERSONAL": "Cá nhân",
+      "ENTERPRISE": "Doanh nghiệp"
+    },
+    "EMemberType": {
+      "MEMBER": "Thành viên",
+      "COLLABORATOR": "Cộng tác viên",
+      "POST_OFFICE": "Bưu cục"
+    },
+    "EStatus": {
+      "INACTIVE": "Không hoạt động",
+      "ACTIVE": "Hoạt động",
+      "WAITING_FOR_VERIFY": "Đang chờ xác minh",
+      "DELETED": "Đã xóa",
+      "WAITING_FOR_APPROVE": "Đang chờ phê duyệt"
+    },
+    "EBusinessType": {
+      "LED_ADVERTISEMENT": "Quảng cáo LED",
+      "SOCIAL_SECURITY_CARD": "Thẻ An Sinh Bình Ổn",
+      "TOURISM": "Du lịch",
+      "HEALTH": "Sức khỏe",
+      "SME360": "SME 360",
+      "FOOD": "Thực phẩm nhân đạo",
+      "RETAIL": "Bán lẻ",
+      "EDUCATION": "Giáo dục"
+    }
+  }
+}

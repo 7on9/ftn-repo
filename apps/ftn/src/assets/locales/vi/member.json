@@ -1,0 +1,15 @@
+{
+    "AuthMemberService": {
+        "error": {
+            "member_existed": "Tài khoản {username} đã tồn tại",
+            "member_not_existed": "Tài khoản không tồn tại",
+            "referral_code_invalid": "Mã giới thiệu không tồn tại",
+            "token_expired": "Mã xác thực đã hết hạn"
+        }
+    },
+    "order": {
+        "notification": {
+            "so_refund_amount": "Đã hoàn tiền thành công +{amount} VNĐ"
+        }
+    }
+}

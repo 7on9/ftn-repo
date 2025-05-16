@@ -1,20 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/ftn-repo",
+  "sourceRoot": "apps/ftn",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/ftn-repo/tsconfig.app.json",
-    "assets": [
-      {
-        "include": "assets/**/*",
-        "watchAssets": true
-      }
-    ]
+    "tsConfigPath": "apps/ftn/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/ftn-repo",
+  "root": "apps/ftn",
   "projects": {
     "ftn": {
       "type": "application",
@@ -22,7 +16,14 @@
       "entryFile": "main",
       "sourceRoot": "apps/ftn/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/ftn/tsconfig.app.json"
+        "tsConfigPath": "apps/ftn/tsconfig.app.json",
+        "assets": [
+          {
+            "include": "assets/**/*",
+            "watchAssets": true,
+            "outDir": "dist"
+          }
+        ]
       }
     },
     "ftn-worker": {

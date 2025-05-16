@@ -36,10 +36,10 @@ const globalModules = [
     useFactory: () => ({
       fallbackLanguage: 'en',
       loaderOptions: {
-        path: join(__dirname, '../../libs/assets/locales/'),
+        path: join(__dirname, '../../assets/locales/'),
         watch: true,
       },
-      typesOutputPath: join(__dirname, '../../libs/assets/i18n.generated.ts'),
+      typesOutputPath: join(__dirname, '../../assets/i18n.generated.ts'),
     }),
     resolvers: [
       { use: QueryResolver, options: ['lang'] },

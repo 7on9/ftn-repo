@@ -1,0 +1,19 @@
+{
+  "WithdrawService": {
+    "error": {
+      "out_of_limit": "Vượt quá hạn mức khả dụng.",
+      "not_exist_any_withdraw_request": "Không tồn tại bất kỳ yêu cầu rút tiền nào.",
+      "withdraw_statement_not_exist": "Bảng kê không tồn tại.",
+      "withdraw_statement_not_pending": "Bảng kê không ở trạng thái chờ.",
+      "withdraw_statement_not_pending_or_waiting_approval": "Bảng kê không ở trạng thái chờ hoặc chờ phê duyệt.",
+      "withdraw_statement_not_pending_or_rejected": "Bảng kê không ở trạng thái chờ hoặc bị từ chối.",
+      "withdraw_profile_not_exist": "Hồ sơ rút tiền không tồn tại.",
+      "withdraw_statement_not_approved": "Bảng kê không ở trạng thái đã duyệt.",
+      "withdraw_transaction_not_exist": "Yêu cầu thanh toán rút tiền không tồn tại.",
+      "withdraw_transaction_not_pending_or_rejected": "Yêu cầu thanh toán rút tiền không ở trạng thái chờ hoặc bị từ chối.",
+      "withdraw_request_not_rejected": "Yêu cầu rút tiền không ở trạng thái bị từ chối.",
+      "withdraw_profile_contract_not_exist": "Thiếu files hợp đồng",
+      "need_to_complete_withdraw_profile": "Cần hoàn thiện hồ sơ rút tiền."
+    }
+  }
+}

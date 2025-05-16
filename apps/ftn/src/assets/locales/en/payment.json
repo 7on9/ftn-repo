@@ -1,0 +1,27 @@
+{
+    "hello": "Xin chào",
+    "notification": {
+        "upgrade_collaborator": {
+            "title": "Upgrade collaborator success",
+            "body": "Payment of {amount} VND has been made successfully, and the collaborator upgrade is complete."
+        },
+        "upgrade_collaborator_free": {
+            "title": "Upgrade collaborator success",
+            "body": "You have successfully registered."
+        },
+        "purchase_card": {
+            "title": "Buy card success",
+            "body": "Payment of {amount} VND has been made successfully, and active card {cardNumber} complete."
+        }
+    },
+    "check_status_transaction": {
+        "upgrade_collaborator": {
+            "message_success": "Payment successful",
+            "message_warning": "You have not paid for the order"
+        },
+        "purchase_card": {
+            "message_success": "Payment successful. Your card has been activated.",
+            "message_warning": "You have not paid for the order. Please go to 'My Cards' and complete the payment to activate the card."
+        }
+    }
+}

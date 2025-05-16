@@ -1,0 +1,34 @@
+{
+  "NSMember": {
+    "EAddressType": {
+      "HOME": "Home",
+      "COMPANY": "Company"
+    },
+    "EMembershipType": {
+      "PERSONAL": "Personal",
+      "ENTERPRISE": "Enterprise"
+    },
+    "EMemberType": {
+      "MEMBER": "Member",
+      "COLLABORATOR": "Collaborator",
+      "POST_OFFICE": "Post Office"
+    },
+    "EStatus": {
+      "INACTIVE": "Inactive",
+      "ACTIVE": "Active",
+      "WAITING_FOR_VERIFY": "Waiting for Verify",
+      "DELETED": "Deleted",
+      "WAITING_FOR_APPROVE": "Waiting for Approve"
+    },
+    "EBusinessType": {
+      "LED_ADVERTISEMENT": "LED Advertisement",
+      "SOCIAL_SECURITY_CARD": "Social Security Card",
+      "TOURISM": "Tourism",
+      "HEALTH": "Health",
+      "SME360": "SME 360",
+      "FOOD": "FOOD",
+      "RETAIL": "RETAIL",
+      "EDUCATION": "EDUCATION"
+    }
+  }
+}
