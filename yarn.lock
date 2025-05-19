@@ -1050,6 +1050,11 @@
     path-to-regexp "8.2.0"
     tslib "2.8.1"
 
+"@nestjs/cqrs@^11.0.0":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@nestjs/cqrs/-/cqrs-11.0.3.tgz#aa6c482c12e883689955b07e3b8c4eb2b417d03d"
+  integrity sha512-2ezBftiXqVfNTzjCrmhazohYhIQzgm8rvM0aKndv73IOOBcVlNuNiQ3HHiHdd4c2w/3MOQDtsGbQHgZUuW6DPw==
+
 "@nestjs/jwt@^11.0.0":
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/@nestjs/jwt/-/jwt-11.0.0.tgz#aef1590e70830c70fba0f59e9b17314dc4d36822"
@@ -1062,6 +1067,14 @@
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@nestjs/mapped-types/-/mapped-types-2.1.0.tgz#b9b536b7c3571567aa1d0223db8baa1a51505a19"
   integrity sha512-W+n+rM69XsFdwORF11UqJahn4J3xi4g/ZEOlJNL6KoW5ygWSmBB2p0S2BZ4FQeS/NDH72e6xIcu35SfJnE8bXw==
+
+"@nestjs/microservices@^11.0.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/microservices/-/microservices-11.1.1.tgz#2775958424ddd77e96ed558a0dfb0792a41f2934"
+  integrity sha512-hmMVd/VmP/5GHsAHPF8NJArDjRRsSCBR6DnpvX6LbNykZoPWh5I2TxFAqTcJeZqZU/MtVgMb9uxljnzTM3/SKw==
+  dependencies:
+    iterare "1.2.1"
+    tslib "2.8.1"
 
 "@nestjs/platform-express@^11.0.1":
   version "11.1.0"
@@ -4424,6 +4437,11 @@ jws@^3.2.2:
   dependencies:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
+
+kafkajs@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/kafkajs/-/kafkajs-2.2.4.tgz#59e6e16459d87fdf8b64be73970ed5aa42370a5b"
+  integrity sha512-j/YeapB1vfPT2iOIUn/vxdyKEuhuY2PxMBvf5JWux6iSaukAccrMtXEY/Lb7OvavDhOWME589bpLrEdnVHjfjA==
 
 keyv@^4.5.3, keyv@^4.5.4:
   version "4.5.4"

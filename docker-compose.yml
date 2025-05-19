@@ -1,41 +1,53 @@
 version: '3.8'
 
 services:
-  # ftn:
-  #   image: ghcr.io/ftn-io/ftn:latest
-  #   container_name: ftn
-  #   restart: unless-stopped
-  #   ports:
-  #     - '8080:8080'
-  #   environment:
-  #     - FTN_API_KEY=${FTN_API_KEY}
-  #     - FTN_API_URL=${FTN_API_URL}
-  #     - FTN_DB_URL=${FTN_DB_URL}
-  #     - FTN_DB_USER=${FTN_DB_USER}
-  #     - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
-  #     - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
-  #   volumes:
-  #     - ./data:/data
-  #   networks:
-  #     - ftn_network
-  #   depends_on:
-  #     - db
-  # ftn-worker:
-  #   image: ghcr.io/ftn-io/ftn-worker:latest
-  #   container_name: ftn_worker
-  #   restart: unless-stopped
-  #   environment:
-  #     - FTN_API_KEY=${FTN_API_KEY}
-  #     - FTN_API_URL=${FTN_API_URL}
-  #     - FTN_DB_URL=${FTN_DB_URL}
-  #     - FTN_DB_USER=${FTN_DB_USER}
-  #     - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
-  #     - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
-  #   networks:
-  #     - ftn_network
-  #   depends_on:
-  #     - ftn
-  #     - db
+  ftn:
+    image: ghcr.io/ftn-io/ftn:latest
+    container_name: ftn
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - FTN_API_KEY=${FTN_API_KEY}
+      - FTN_API_URL=${FTN_API_URL}
+      - FTN_DB_URL=${FTN_DB_URL}
+      - FTN_DB_USER=${FTN_DB_USER}
+      - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
+      - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
+      - KAFKA_BROKERS=kafka-1:9092,kafka-2:9094,kafka-3:9096
+    volumes:
+      - ./data:/data
+    networks:
+      - ftn_network
+      - kafka-net
+    depends_on:
+      - db
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      
+  ftn-worker:
+    image: ghcr.io/ftn-io/ftn-worker:latest
+    container_name: ftn_worker
+    restart: unless-stopped
+    environment:
+      - FTN_API_KEY=${FTN_API_KEY}
+      - FTN_API_URL=${FTN_API_URL}
+      - FTN_DB_URL=${FTN_DB_URL}
+      - FTN_DB_USER=${FTN_DB_USER}
+      - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
+      - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
+      - KAFKA_BROKERS=kafka-1:9092,kafka-2:9094,kafka-3:9096
+      - KAFKA_GROUP_ID=ftn-worker-group
+    networks:
+      - ftn_network
+      - kafka-net
+    depends_on:
+      - ftn
+      - db
+      - kafka-1
+      - kafka-2
+      - kafka-3
   db:
     image: mysql:9.3.0
     container_name: ftn_db
@@ -55,6 +67,8 @@ services:
 networks:
   ftn_network:
     driver: bridge
+  kafka-net:
+    external: true
 volumes:
   db_data:
     driver: local
