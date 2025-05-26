@@ -24,6 +24,7 @@ import { getFromContainer, MetadataStorage } from 'class-validator';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { SchemasObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { ApiException } from '~/libs/@systems/exceptions';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(weekday);
@@ -78,7 +79,22 @@ async function bootstrap() {
   const { REQUEST_TIMEOUT = 30 * 60 * 1000 } = configEnv();
   setupTransactionContext();
   const app = await NestFactory.create(FtnModule);
-  await app.listen(process.env.PORT ?? 3000);
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.KAFKA,
+  //   options: {
+  //     client: {
+  //       clientId: 'ftn-api-gateway',
+  //       brokers: ['localhost:9092', 'localhost:9094', 'localhost:9096'],
+  //     },
+  //     consumer: {
+  //       groupId: 'ftn-consumer-group',
+  //       allowAutoTopicCreation: true, // Enable auto topic creation
+  //     },
+  //   },
+  // });
+
+  // // Start all microservices
+  // await app.startAllMicroservices();
 
   //#region Common config
   app.enableCors({
@@ -111,6 +127,9 @@ async function bootstrap() {
 
   //#endregion
   configSwagger(app);
+
+  await app.listen(process.env.PORT ?? 3000);
+  console.log(`Access Swagger at: http://localhost:${process.env.PORT ?? 3000}/swagger#`);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

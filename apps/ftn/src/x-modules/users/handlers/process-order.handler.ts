@@ -1,7 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { ProcessOrderCommand } from '../commands/process-order.command';
-import { KafkaProducerService } from '~/libs/@core/kafka';
 
 @CommandHandler(ProcessOrderCommand)
 export class ProcessOrderCommandHandler
@@ -10,7 +9,7 @@ export class ProcessOrderCommandHandler
 
   constructor(
     private readonly eventBus: EventBus,
-    private readonly kafkaProducer: KafkaProducerService,
+    // private readonly kafkaProducer: KafkaProducerService,
   ) {}
 
   async execute(command: ProcessOrderCommand): Promise<void> {
@@ -18,11 +17,11 @@ export class ProcessOrderCommandHandler
     
     try {
       // For API calls, we'll dispatch this to Kafka for async processing
-      await this.kafkaProducer.send(
-        'ftn.commands.ProcessOrderCommand',
-        command,
-        command.id
-      );
+      // await this.kafkaProducer.send(
+      //   'ftn.commands.ProcessOrderCommand',
+      //   command,
+      //   command.id
+      // );
       
       this.logger.log(`Order processing request sent to worker: ${command.orderId}`);
     } catch (error) {

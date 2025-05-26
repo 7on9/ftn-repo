@@ -22,10 +22,6 @@ services:
       - kafka-net
     depends_on:
       - db
-      - kafka-1
-      - kafka-2
-      - kafka-3
-      
   ftn-worker:
     image: ghcr.io/ftn-io/ftn-worker:latest
     container_name: ftn_worker
@@ -45,9 +41,6 @@ services:
     depends_on:
       - ftn
       - db
-      - kafka-1
-      - kafka-2
-      - kafka-3
   db:
     image: mysql:9.3.0
     container_name: ftn_db
@@ -62,6 +55,18 @@ services:
 
     volumes:
       - ./.docker/db_data:/var/lib/mysql
+    networks:
+      - ftn_network
+  redis:
+    image: redis:latest
+    container_name: ftn_redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD-NodeTeam@2025}
+    volumes:
+      - ./redis_data:/data
     networks:
       - ftn_network
 networks:

@@ -2,7 +2,6 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { CreateUserCommand } from '../commands/create-user.command';
 import { UserCreatedEvent } from '../events/user-created.event';
-import { KafkaProducerService } from '~/libs/@core/kafka';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserCommandHandler
@@ -11,7 +10,7 @@ export class CreateUserCommandHandler
 
   constructor(
     private readonly eventBus: EventBus,
-    private readonly kafkaProducer: KafkaProducerService,
+    // private readonly kafkaProducer: KafkaProducerService,
   ) {}
 
   async execute(command: CreateUserCommand): Promise<any> {
@@ -37,14 +36,14 @@ export class CreateUserCommandHandler
       this.eventBus.publish(userCreatedEvent);
       
       // Send the process order command directly to Kafka for the worker to handle
-      await this.kafkaProducer.send(
-        'ftn.commands.ProcessOrderCommand',
-        {
-          userId: user.id,
-          orderId: 'sample-order-id',
-          // Additional command properties...
-        },
-      );
+      // await this.kafkaProducer.send(
+      //   'ftn.commands.ProcessOrderCommand',
+      //   {
+      //     userId: user.id,
+      //     orderId: 'sample-order-id',
+      //     // Additional command properties...
+      //   },
+      // );
       
       this.logger.log(`User ${user.id} created successfully`);
       

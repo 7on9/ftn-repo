@@ -6,11 +6,11 @@ import { ScheduleModule } from '@nestjs/schedule'
 import { CacheModule } from '@nestjs/cache-manager'
 import { ConfigModule } from '@nestjs/config'
 import { FtnCqrsModule } from '~/libs/@core/cqrs'
-import { KafkaModule } from '~/libs/@core/kafka'
 
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n'
 import { join } from 'path'
 import { TechUtils } from '~/libs/@core/utils'
+import { MessagingModule } from '~/libs/@core/kafka'
 
 const envConfig = configEnv()
 const { JWT_EXPIRY, JWT_SECRET } = envConfig
@@ -32,7 +32,7 @@ const globalModules = [
 		store: 'memory',
 	}),
 	FtnCqrsModule,
-	KafkaModule,
+	MessagingModule,
 	I18nModule.forRootAsync({
 		useFactory: () => ({
 			fallbackLanguage: 'en',
