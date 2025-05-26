@@ -19,7 +19,7 @@ export class MessagingConsumerService implements OnApplicationShutdown {
   ) {
     try {
       // this.brokerUrl = this.configService.kafkaBroker;
-      this.brokerUrl = "localhost:29092"; // Fallback for testing purposes
+      this.brokerUrl = "localhost:9092,localhost:9094,localhost:9096"; // Fallback for testing purposes
     } catch (error) {
       console.error(
         'Error getting configuration on message consumer service:',

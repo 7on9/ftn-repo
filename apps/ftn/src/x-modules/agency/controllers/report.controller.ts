@@ -9,21 +9,21 @@ export class ReportController {
 	@DefGet('request', {
 		summary: 'Request a new report',
 	})
-	async requestReport(@Query() query: { reportId: string }) {
-		return this.reportService.startGenerateReport(query.reportId)
+	async requestReport(@Query('reportId') reportId: string) {
+		return this.reportService.startGenerateReport(reportId)
 	}
 
 	@DefGet('status', {
 		summary: 'Get report status',
 	})
-	async getReportStatus(@Query() query: { reportId: string }) {
-		return this.reportService.getReportStatus(query.reportId)
+	async getReportStatus(@Query('reportId') reportId: string) {
+		return this.reportService.getReportStatus(reportId)
 	}
 
 	@DefGet(':id', {
 		summary: 'Get report by ID',
 	})
-	async getReportById(@Query() query: { id: string }) {
-		return this.reportService.getReport(query.id)
+	async getReportById(@Query('id') id: string) {
+		return this.reportService.getReport(id)
 	}
 }
