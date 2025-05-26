@@ -28,7 +28,7 @@ export function DefTransaction(options?: {
     };
   }
   const { connectionName = undefined, propagation = undefined, isoLevel = undefined } = options;
-  let isolationLevel: IsolationLevel = undefined;
+  let isolationLevel: IsolationLevel | undefined = undefined;
   Object.keys(IsolationLevel).forEach(key => {
     if (isoLevel === key) {
       isolationLevel = IsolationLevel[key];

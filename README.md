@@ -29,6 +29,8 @@
 
 ```bash
 $ yarn install
+
+$ cp .env-template .env
 ```
 
 ## Compile and run the project

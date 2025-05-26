@@ -1,0 +1,19 @@
+{
+    "hello": "sample",
+    "notification": {
+        "purchase_card": {
+            "title": "sample",
+            "body": "sample."
+        }
+    },
+    "check_status_transaction": {
+        "upgrade_collaborator": {
+            "message_success": "sample",
+            "message_warning": "sample"
+        },
+        "purchase_card": {
+            "message_success": "sample",
+            "message_warning": "sample"
+        }
+    }
+}

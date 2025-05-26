@@ -30,6 +30,9 @@ export class AdminModule implements NestModule {
     consumer
       .apply(AdminMiddleware)
       .exclude()
-      .forRoutes({ path: `${RefixModule.admin}*`, method: RequestMethod.ALL });
+      .forRoutes({
+        path: `${RefixModule.admin}{/*path}`,
+        method: RequestMethod.ALL,
+      });
   }
 }

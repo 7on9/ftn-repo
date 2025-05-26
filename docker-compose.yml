@@ -6,7 +6,7 @@ services:
     container_name: ftn
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       - FTN_API_KEY=${FTN_API_KEY}
       - FTN_API_URL=${FTN_API_URL}
@@ -14,10 +14,12 @@ services:
       - FTN_DB_USER=${FTN_DB_USER}
       - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
       - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
+      - KAFKA_BROKERS=kafka-1:9092,kafka-2:9094,kafka-3:9096
     volumes:
       - ./data:/data
     networks:
       - ftn_network
+      - kafka-net
     depends_on:
       - db
   ftn-worker:
@@ -31,26 +33,47 @@ services:
       - FTN_DB_USER=${FTN_DB_USER}
       - FTN_DB_PASSWORD=${FTN_DB_PASSWORD}
       - FTN_LOG_LEVEL=${FTN_LOG_LEVEL}
+      - KAFKA_BROKERS=kafka-1:9092,kafka-2:9094,kafka-3:9096
+      - KAFKA_GROUP_ID=ftn-worker-group
     networks:
       - ftn_network
+      - kafka-net
     depends_on:
       - ftn
       - db
   db:
-    image: postgres:latest
+    image: mysql:9.3.0
     container_name: ftn_db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${FTN_DB_USER}
-      - POSTGRES_PASSWORD=${FTN_DB_PASSWORD}
-      - POSTGRES_DB=ftn
+      - MYSQL_DATABASE=${DB_PRIMARY_DATABASE}
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=${DB_PRIMARY_USERNAME}
+      - MYSQL_PASSWORD=${DB_PRIMARY_PASSWORD}
+    ports:
+      - '${DB_PRIMARY_PORT}:3306'
+
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - ./.docker/db_data:/var/lib/mysql
+    networks:
+      - ftn_network
+  redis:
+    image: redis:latest
+    container_name: ftn_redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD-NodeTeam@2025}
+    volumes:
+      - ./redis_data:/data
     networks:
       - ftn_network
 networks:
   ftn_network:
     driver: bridge
+  kafka-net:
+    external: true
 volumes:
   db_data:
     driver: local

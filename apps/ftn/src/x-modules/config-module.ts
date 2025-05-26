@@ -3,4 +3,5 @@ export const RefixModule = {
   admin: 'admins',
   members: 'members',
   integration: 'integrations',
+  agency: 'agencies',
 };

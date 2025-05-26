@@ -18,8 +18,16 @@ function fixPath(strInput: string) {
   return path.replace(regexConfig, '');
 }
 
+const toPascalCase = (str: string) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export function ChildModule(childMetadata?: IChildModuleMetadata): ClassDecorator {
-  let { prefix = '', ...metadata } = childMetadata;
+  let { prefix = '', ...metadata } = childMetadata || {};
   const propsKeys = Object.keys(metadata);
   validateModuleKeys(propsKeys);
   return target => {
@@ -41,7 +49,7 @@ export function ChildModule(childMetadata?: IChildModuleMetadata): ClassDecorato
     const controllers = metadata['controllers'] || [];
     controllers.forEach(ctr => {
       // mix Tags group swagger
-      const groupName = prefix ? `[${prefix.toPascalCase()}] ${ctr.name}` : `[API]${ctr.name}`;
+      const groupName = prefix ? `[${toPascalCase(prefix)}] ${ctr.name}` : `[API]${ctr.name}`;
       ApiTags(groupName)(ctr);
     });
   };

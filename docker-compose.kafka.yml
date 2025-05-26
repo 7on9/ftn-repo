@@ -1,0 +1,104 @@
+version: '3'
+services:
+  kafka-1:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION:-7.9.0}
+    hostname: kafka-1
+    container_name: kafka-1
+    ports:
+      - '${KAFKA1_PORT:-9092}:9092'
+      - '${KAFKA1_HOST_PORT:-29092}:29092'
+    environment:
+      KAFKA_KRAFT_MODE: 'true'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka-1:9092,CONTROLLER://kafka-1:9093,EXTERNAL://kafka-1:29092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092,EXTERNAL://localhost:29092'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_LOG_RETENTION_HOURS: '${LOG_RETENTION_HOURS:-168}'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: '${CLUSTER_ID:-MkU3OEVBNTcwNTJENDM2Qk}'
+    volumes:
+      - ./kafka-data/kafka-1:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka-2:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION:-7.9.0}
+    hostname: kafka-2
+    container_name: kafka-2
+    ports:
+      - '${KAFKA2_PORT:-9094}:9094'
+      - '${KAFKA2_HOST_PORT:-29094}:29094'
+    environment:
+      KAFKA_KRAFT_MODE: 'true'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 2
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka-2:9094,CONTROLLER://kafka-2:9093,EXTERNAL://kafka-2:29094'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9094,EXTERNAL://localhost:29094'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_LOG_RETENTION_HOURS: '${LOG_RETENTION_HOURS:-168}'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: '${CLUSTER_ID:-MkU3OEVBNTcwNTJENDM2Qk}'
+    volumes:
+      - ./kafka-data/kafka-2:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka-3:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION:-7.9.0}
+    hostname: kafka-3
+    container_name: kafka-3
+    ports:
+      - '${KAFKA3_PORT:-9096}:9096'
+      - '${KAFKA3_HOST_PORT:-29096}:29096'
+    environment:
+      KAFKA_KRAFT_MODE: 'true'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 3
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka-3:9096,CONTROLLER://kafka-3:9093,EXTERNAL://kafka-3:29096'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9096,EXTERNAL://localhost:29096'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_LOG_RETENTION_HOURS: '${LOG_RETENTION_HOURS:-168}'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: '${CLUSTER_ID:-MkU3OEVBNTcwNTJENDM2Qk}'
+    volumes:
+      - ./kafka-data/kafka-3:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:${KAFKA_UI_VERSION:-latest}
+    container_name: kafka-ui
+    ports:
+      - '${KAFKA_UI_PORT:-8080}:8080'
+    environment:
+      KAFKA_CLUSTERS_0_NAME: '${CLUSTER_NAME:-local-kafka-cluster}'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:9092,kafka-2:9094,kafka-3:9096'
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    driver: bridge

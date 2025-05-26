@@ -28,13 +28,13 @@ export class RequestContext {
   public static getAttribute<T>(key: string): T {
     const reqContext = RequestContext.currentRequestContext();
     if (!reqContext) {
-      return undefined;
+      return undefined as T;
     }
     const attributes = reqContext.attributes || {};
     if (attributes[key]) {
       return attributes[key] as T;
     }
-    return undefined;
+    return undefined as T;
   }
 
   public static currentRequestContext(): RequestContext {

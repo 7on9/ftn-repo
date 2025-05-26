@@ -4,3 +4,4 @@ export * from './admin';
 export * from './members';
 export * from './integration';
 export * from './publics';
+export * from './agency';

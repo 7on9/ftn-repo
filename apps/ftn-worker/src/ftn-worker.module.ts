@@ -1,10 +1,21 @@
-import { Module } from '@nestjs/common';
-import { FtnWorkerController } from './ftn-worker.controller';
-import { FtnWorkerService } from './ftn-worker.service';
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { FtnCqrsModule } from '~/libs/@core/cqrs'
+import { MessagingModule } from '~/libs/@core/kafka'
+import * as allModules from './x-modules'
 
 @Module({
-  imports: [],
-  controllers: [FtnWorkerController],
-  providers: [FtnWorkerService],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			// Load environment variables from .env file
+			envFilePath: process.env.ENV_FILE || '.env',
+		}),
+		FtnCqrsModule,
+		MessagingModule,
+		...Object.values(allModules), // Import all modules dynamically
+	],
+	controllers: [],
+	providers: [],
 })
 export class FtnWorkerModule {}

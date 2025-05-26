@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsOptional, IsString, IsUrl, IsUUID } from 'class-validator';
 import { PageRequest } from '@libs/@systems/utils';
 import { NSMember } from '@libs/common/enums';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 export class ListMemberReq extends PageRequest {
   @ApiPropertyOptional()

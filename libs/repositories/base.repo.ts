@@ -1,5 +1,5 @@
 import {
-  FindOptions,
+  FindConditions,
   ObjectLiteral,
   Repository,
   FindOneOptions,
@@ -8,30 +8,24 @@ import {
   SaveOptions,
   FindManyOptions,
 } from 'typeorm';
-import {
-  PageRequest,
-  PageResponse,
-  TablePageRequest,
-} from '@libs/@systems/utils/page.utils';
+import { PageRequest, PageResponse, TablePageRequest } from '@libs/@systems/utils/page.utils';
 
-interface ISumFindOptions<Entity extends ObjectLiteral = any> {
+interface ISumFindOptions<Entity = any> {
   sumSelect: (keyof Entity)[];
-  where?: FindOptions<Entity>[] | FindOptions<Entity> | ObjectLiteral | string;
+  where?: FindConditions<Entity>[] | FindConditions<Entity> | ObjectLiteral | string;
 }
-type TSumResult<Entity extends ObjectLiteral = any> = {
+type TSumResult<Entity = any> = {
   [key in keyof Entity]: number;
 };
 
 const pageSizeDefault = 10;
 
-export class BaseRepository<
-  Entity extends ObjectLiteral,
-> extends Repository<Entity> {
-  constructor(target: any, manager: any, queryRunner?: any) {
-    super(target, manager, queryRunner);
+export class BaseRepository<Entity extends ObjectLiteral> extends Repository<Entity> {
+  constructor() {
+    super();
   }
   async findOrCreate(value: Partial<Entity>, options?: FindOneOptions<Entity>) {
-    let entity = (await this.findOne(options || {})) as any;
+    let entity = (await this.findOne(options)) as any;
 
     if (!entity) {
       entity = await this.save(value as DeepPartial<Entity>);
@@ -47,10 +41,7 @@ export class BaseRepository<
     return this.save(entities, newOption);
   }
 
-  async findPagination(
-    options: FindOneOptions<Entity> = {},
-    pageRequest: PageRequest,
-  ) {
+  async findPagination(options: FindOneOptions<Entity> = {}, pageRequest: PageRequest) {
     const { pageIndex = 1, pageSize = 20 } = pageRequest;
     return super
       .findAndCount({
@@ -61,11 +52,9 @@ export class BaseRepository<
       .then(([data, total]) => ({ data, total }));
   }
 }
-export class BaseRepoPostgreSql<
-  Entity extends ObjectLiteral,
-> extends BaseRepository<Entity> {
-  constructor(target: any, manager: any, queryRunner?: any) {
-    super(target, manager, queryRunner);
+export class BaseRepoPostgreSql<Entity extends ObjectLiteral> extends BaseRepository<Entity> {
+  constructor() {
+    super();
   }
 
   async queryPagination<T = any, F = any>(
@@ -81,8 +70,7 @@ export class BaseRepoPostgreSql<
     }
     let sqlData = ` select * from ( ${sqlRoot} ) temp  `;
     const sqlTotal = ` select CAST( count(*) as integer ) as total from ( ${sqlRoot} ) temp  `;
-    sqlData =
-      sqlData + ` limit ${pageSize} offset  ${(pageIndex - 1) * pageSize}  `;
+    sqlData = sqlData + ` limit ${pageSize} offset  ${(pageIndex - 1) * pageSize}  `;
     const res = await Promise.all([this.query(sqlData), this.query(sqlTotal)]);
     return {
       data: res[0],
@@ -118,10 +106,51 @@ export class BaseRepoPostgreSql<
     };
   }
 
-  async queryOne<T = any>(
-    query: string,
-    parameters?: any[],
-  ): Promise<T | undefined> {
+  async sum<T = TSumResult<Entity>>(sumFindOptions: ISumFindOptions<Entity>) {
+    const { sumSelect, ...findManyOptions } = sumFindOptions;
+    const { ownColumns = [] } = this.metadata;
+    const keyMaps = ownColumns.reduce((prev, current) => {
+      const { propertyName, givenDatabaseName, databaseName, databaseNameWithoutPrefixes } =
+        current;
+
+      const proDbName = databaseNameWithoutPrefixes || databaseName || givenDatabaseName;
+
+      const fieldSelect = sumSelect.find(v => v === propertyName);
+      if (fieldSelect) {
+        prev[propertyName] = proDbName;
+      }
+      return prev;
+    }, {});
+
+    const queryBuilder = FindOptionsUtils.applyOptionsToQueryBuilder(
+      this.createQueryBuilder(),
+      findManyOptions,
+    );
+
+    for (const [idx, keyMap] of Object.keys(keyMaps).entries()) {
+      if (idx === 0) {
+        queryBuilder.select(
+          `COALESCE ( SUM ( CASE WHEN "${keyMaps[keyMap]}" IS  NULL THEN 0 ELSE "${keyMaps[keyMap]}" END )) `,
+          keyMap,
+        );
+      } else {
+        queryBuilder.addSelect(
+          `COALESCE ( SUM ( CASE WHEN "${keyMaps[keyMap]}" IS  NULL THEN 0 ELSE "${keyMaps[keyMap]}" END )) `,
+          keyMap,
+        );
+      }
+    }
+    const res = await queryBuilder.getRawOne<T>();
+    if (res && typeof res === 'object') {
+      Object.keys(res).forEach(key => {
+        res[key] = Number(res[key]);
+      });
+    }
+
+    return res;
+  }
+
+  async queryOne<T = any>(query: string, parameters?: any[]): Promise<T | undefined> {
     try {
       const res = await this.query(query, parameters);
       if (!res || !(res instanceof Array) || res.length === 0) {
