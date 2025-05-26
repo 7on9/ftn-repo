@@ -17,6 +17,7 @@ export class ReportService {
 	async getReport(id: string) {
 		// check status of report
 		const status = await this.cache.get(`report:${id}`)
+		console.log('Report status:', status)
 		if (!status) {
 			return {
 				id,
@@ -24,12 +25,11 @@ export class ReportService {
 				message: 'Report not found or has expired.',
 			}
 		}
-		const taskData = JSON.parse(status)
-		if (taskData.status !== NSGlobal.EventStatus.Success) {
+		if (status !== NSGlobal.EventStatus.Success) {
 			return {
 				id,
-				status: taskData.status,
-				message: `Report is currently ${taskData.status}. Please wait until the report is completed.`,
+				status: status,
+				message: `Report is currently ${status}. Please wait until the report is completed.`,
 			}
 		}
 		// Simulate fetching report data
@@ -99,7 +99,7 @@ export class ReportService {
 		// const message = new CreateActionLogMessage([messagePayload]);
 
 		const message: NSMessage.IMessageRecord = {
-			topic: 'ftn.commands.ReportGenerate',
+			topic: NSMessage.NSKafkaTopics.GENERATE_REPORT,
 			messages: [
 				{
 					key: reportId,
@@ -120,6 +120,40 @@ export class ReportService {
 		}
 	}
 
+	async generateReportWithSimulatedTimeoutAndWait(reportId: string, timeout: number = 5000) {
+		// Check if the report is already in progress
+		const existingStatus = await this.cache.get(`report:${reportId}`)
+		if (existingStatus) {
+			return {
+				id: reportId,
+				status: NSGlobal.EventStatus.Processing,
+				message: 'Report generation is already in progress.',
+			}
+		}
+
+		// Simulate a long-running process with a timeout
+		await this.simulateTimeout(reportId)
+
+		// Set the report status to success after the simulated timeout
+		await this.cache.set(`report:${reportId}`, NSGlobal.EventStatus.Success, 3600) // 1 hour expiration
+
+		return {
+			id: reportId,
+			status: NSGlobal.EventStatus.Success,
+			message: 'Report generated successfully after simulated timeout.',
+		}
+	}
+
+	async simulateTimeout(id?: string): Promise<void> {
+		// Simulate a timeout scenario
+		const delay = Math.random() * 5000; // Random timeout between 0 and 5 seconds
+		return new Promise<void>((resolve) => {
+			setTimeout(() => {
+				console.log('Simulated timeout occurred', id ? `for report ID: ${id}` : '')
+				resolve()
+			}, delay)
+		})
+	}
 	async getReportStatus(reportId: string) {
 		const status = await this.cache.get(`report:${reportId}`)
 		if (!status) {

@@ -1,4 +1,4 @@
-import { Query } from '@nestjs/common'
+import { Param, Query } from '@nestjs/common'
 import { DefController, DefGet } from '@libs/@core/decorator'
 import { ReportService } from '../services'
 
@@ -13,6 +13,13 @@ export class ReportController {
 		return this.reportService.startGenerateReport(reportId)
 	}
 
+	@DefGet('request/sync', {
+		summary: 'Request a new report synchronously',
+	})
+	async requestReportSynchronously(@Query('reportId') reportId: string) {
+		return this.reportService.generateReportWithSimulatedTimeoutAndWait(reportId)
+	}
+
 	@DefGet('status', {
 		summary: 'Get report status',
 	})
@@ -23,7 +30,7 @@ export class ReportController {
 	@DefGet(':id', {
 		summary: 'Get report by ID',
 	})
-	async getReportById(@Query('id') id: string) {
+	async getReportById(@Param('id') id: string) {
 		return this.reportService.getReport(id)
 	}
 }
