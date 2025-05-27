@@ -6,6 +6,9 @@ export namespace NSMessage {
 
 	export type MessagePayload = {
 		messageType?: string
+		partition?: number
+		key?: string
+		value?: string
 	}
 
 	export interface IMessageRecord {
@@ -26,6 +29,8 @@ export namespace NSMessage {
 	}
 
 	export enum NSKafkaTopics {
+		ALL = 'all',
 		GENERATE_REPORT = 'generate-report',
+		NOTIFICATION = 'notification',
 	}
 }

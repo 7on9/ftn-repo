@@ -13,7 +13,7 @@ export class MemberController {
 
 
   @DefPost('update-password', {
-      summary: 'Admin cập nhật lại mật khẩu',
+      summary: 'Update password for user',
     })
     updatePassword(@Body() body: UpdatePassword) {
     return this.memberService.updateNewPassword(body);
