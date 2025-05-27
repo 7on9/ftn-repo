@@ -4,6 +4,10 @@ import { RedisService } from '~/libs/@core/redis'
 import { NSGlobal } from '~/libs/common/enums/NSGlobal'
 import { MessagingProducerService } from '~/libs/@core/kafka'
 import { NSMessage } from '~/libs/common/enums/NSMessage'
+import {
+	CreateReportMessage,
+	CreateReportMessagePayload,
+} from '../messages/generate-report.message'
 
 @Injectable()
 export class ReportService {
@@ -92,25 +96,22 @@ export class ReportService {
 			},
 		}
 
-		// const messagePayload: CreateActionLogMessagePayload = {
-		//   userId,
-		//   action: ActionLogTypeEnum.REGISTER,
-		// };
-		// const message = new CreateActionLogMessage([messagePayload]);
-
-		const message: NSMessage.IMessageRecord = {
-			topic: NSMessage.NSKafkaTopics.GENERATE_REPORT,
-			messages: [
-				{
-					key: reportId,
-					value: JSON.stringify(data),
-					headers: 'reportId',
-				},
-			],
-			messageType: '',
+		try {
+			const messagePayload: CreateReportMessagePayload = {
+				userId: 'report-user-123', // Example user ID
+				action: NSMessage.NSKafkaTopics.GENERATE_REPORT,
+				value: JSON.stringify(data),
+				key: reportId,
+				// partition: parseInt(reportId, 10) % 2, // Example partitioning logic based on reportId
+				reportId: parseInt(reportId, 10), // Ensure reportId is a number
+			}
+			const mess = new CreateReportMessage([messagePayload], messagePayload)
+			// return mess
+			await this.kafka.produce(mess)
+		} catch (error) {
+			console.log('Error creating report message:', error)
 		}
 
-		await this.kafka.produce(message)
 		// set key to redis
 		await this.cache.set(`report:${reportId}`, NSGlobal.EventStatus.Processing, 3600) // 1 hour expiration
 		return {
@@ -146,8 +147,8 @@ export class ReportService {
 
 	async simulateTimeout(id?: string): Promise<void> {
 		// Simulate a timeout scenario
-		const delay = Math.random() * 5000; // Random timeout between 0 and 5 seconds
-		return new Promise<void>((resolve) => {
+		const delay = Math.random() * 5000 // Random timeout between 0 and 5 seconds
+		return new Promise<void>(resolve => {
 			setTimeout(() => {
 				console.log('Simulated timeout occurred', id ? `for report ID: ${id}` : '')
 				resolve()

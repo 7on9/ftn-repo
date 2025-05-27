@@ -2,7 +2,7 @@ const autocannon = require('autocannon');
 
 const instance = autocannon({
   url: 'http://localhost:4001/api/agencies/reports/request',
-  connections: 200,
+  connections: 1000,
   pipelining: 1,
   duration: 10,
   requests: [
@@ -16,7 +16,7 @@ const instance = autocannon({
       }
     }
   ],
-  amount: 1000,
+  amount: 10000,
 }, (err, result) => {
   if (err) {
     console.error('Error:', err);
